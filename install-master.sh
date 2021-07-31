@@ -17,6 +17,9 @@ KUBERNETES_VERSION=${KUBERNETES_VERSION:-latest}
 KUBERNETES_CNI_VERSION=${KUBERNETES_CNI_VERSION:-latest}
 DOCKER_VERSION=${DOCKER_VERSION:-latest}
 
+# master 파일 다운
+curl -O https://raw.githubusercontent.com/AI-Ocean/kubernetes-install-scripts/main/master.yaml
+
 sed -i $(eval echo 's/JOIN_TOKEN/$JOIN_TOKEN/g') master.yaml
 sed -i $(eval echo 's/ADVERTISE_ADDR/$ADVERTISE_ADDR/g') master.yaml
 
