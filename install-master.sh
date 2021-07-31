@@ -1,4 +1,5 @@
 #!/bin/bash -xe
+# !! RUN AS ROOT
 
 set -x
 
@@ -9,6 +10,8 @@ function get_random_string () {
 	echo $random_string
 }
 
+env
+
 # 서버단에서 내려줘야 함.
 ADVERTISE_NET_DEV=${ADVERTISE_NET_DEV:-enp0s8}
 ADVERTISE_ADDR=$(ifconfig $ADVERTISE_NET_DEV | grep 'inet' | cut -d: -f2 | awk '{print $2}')
@@ -18,14 +21,18 @@ KUBERNETES_CNI_VERSION=${KUBERNETES_CNI_VERSION:-latest}
 DOCKER_VERSION=${DOCKER_VERSION:-latest}
 
 # master 파일 다운
+echo [Donwload master.yaml]
 curl -O https://raw.githubusercontent.com/AI-Ocean/kubernetes-install-scripts/main/master.yaml
+echo Done.
 
 sed -i $(eval echo 's/JOIN_TOKEN/$JOIN_TOKEN/g') master.yaml
 sed -i $(eval echo 's/ADVERTISE_ADDR/$ADVERTISE_ADDR/g') master.yaml
 
+echo [Install Prerequest packages]
 apt-get update
 apt-get install -y apt-transport-https curl
 
+echo [Docker Install]
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
 
@@ -37,6 +44,7 @@ then
   service docker restart
 fi
 
+echo [Kubernetes install]
 if [ "$KUBERNETES_VERSION" = "latest" ]
 then
   apt-get install -y kubelet kubeadm kubectl
@@ -46,6 +54,7 @@ else
     kubectl=$KUBERNETES_VERSION
 fi
 
+echo [Kubernetes CNI install]
 if [ "$KUBERNETES_CNI_VERSION" = "latest" ]
 then
   apt-get install -y kubernetes-cni
@@ -54,10 +63,11 @@ else
 fi
 
 # Run kubeadm
+echo [Run kubeadm]
 kubeadm init \
   --config master.yaml
 
 # Prepare kubeconfig file for download to local machine
-sudo mkdir -p /root/.kube
-sudo cp -i /etc/kubernetes/admin.conf /root/.kube/config
-sudo chown root:root /root/.kube/config
+mkdir -p /root/.kube
+cp -i /etc/kubernetes/admin.conf /root/.kube/config
+chown root:root /root/.kube/config
