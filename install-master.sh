@@ -1,5 +1,9 @@
 #!/bin/bash -xe
-# !! RUN AS ROOT
+# RUN AS ROOT
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
 
 set -x
 
