@@ -1,0 +1,9 @@
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    token: "JOIN_TOKEN"
+    apiServerEndpoint: "API_SERVER_ADDR:6443"
+    unsafeSkipCAVerification: true
+nodeRegistration:
+  name: NODE_HOSTNAME
