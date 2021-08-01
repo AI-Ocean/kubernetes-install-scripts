@@ -1,8 +1,8 @@
 #!/bin/bash -xe
 # RUN AS ROOT
 if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 
-   exit 1
+  echo "This script must be run as root" 
+  exit 1
 fi
 
 set -x
@@ -10,15 +10,17 @@ set -x
 swapoff -a
 
 # 서버단에서 내려줘야 함.
-if [[ -z "$API_SERVER_ADDR" ]]; then
+if [[ -z "$API_SERVER_ADDR" ]]
+then
   echo "API_SERVER_ADDR is not set. abort"
-  exit
+  exit 1
 fi
 
 # 서버단에서 내려줘야 함.
-if [[ -z "$JOIN_TOKEN" ]]; then
+if [[ -z "$JOIN_TOKEN" ]]
+then
   echo "JOIN_TOKEN is not set. abort"
-  exit
+  exit 1
 fi
 
 # 서버단에서 내려줘야 함.
@@ -71,7 +73,8 @@ else
 fi
 
 echo "[Kubernetes API Server Health Check]"
-until $(curl --output /dev/null --silent --fail https://$API_SERVER_ADDR:6443/healthz -k); do
+until $(curl --output /dev/null --silent --fail https://$API_SERVER_ADDR:6443/healthz -k)
+do
     printf '.'
     sleep 5
 done
