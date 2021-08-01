@@ -28,7 +28,7 @@ NODE_HOSTNAME=$(hostname)
 DOCKER_VERSION=${DOCKER_VERSION:-latest}
 
 # worker 파일 다운
-echo [Donwload worker.yaml]
+echo "[Donwload worker.yaml]"
 curl -O https://raw.githubusercontent.com/AI-Ocean/kubernetes-install-scripts/main/worker.yaml
 echo Done.
 
@@ -36,11 +36,11 @@ sed -i 's/JOIN_TOKEN/'"$JOIN_TOKEN"'/g' worker.yaml
 sed -i 's/API_SERVER_ADDR/'"$API_SERVER_ADDR"'/g' worker.yaml
 sed -i 's/NODE_HOSTNAME/'"$NODE_HOSTNAME"'/g' worker.yaml
 
-echo [Install Prerequest packages]
+echo "[Install Prerequest packages]"
 apt-get update
 apt-get install -y apt-transport-https curl
 
-echo [Docker Install]
+echo "[Docker Install]"
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
 
@@ -52,7 +52,7 @@ then
   service docker restart
 fi
 
-echo [Kubernetes install]
+echo "[Kubernetes install]"
 if [ "$KUBERNETES_VERSION" = "latest" ]
 then
   apt-get install -y kubelet kubeadm kubectl
@@ -62,7 +62,7 @@ else
     kubectl=$KUBERNETES_VERSION
 fi
 
-echo [Kubernetes CNI install]
+echo "[Kubernetes CNI install]"
 if [ "$KUBERNETES_CNI_VERSION" = "latest" ]
 then
   apt-get install -y kubernetes-cni
@@ -77,7 +77,7 @@ done
 
 echo "API Server is running!"
 
-echo [Join]
+echo "[Join]"
 # Run kubeadm
 kubeadm join --config worker.yaml
-echo Done.
+echo "Done."
