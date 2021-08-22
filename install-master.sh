@@ -22,7 +22,7 @@ ADVERTISE_ADDR=$(ifconfig $ADVERTISE_NET_DEV | grep 'inet' | cut -d: -f2 | awk '
 JOIN_TOKEN=${JOIN_TOKEN:-"$(get_random_string 6).$(get_random_string 16)"}
 KUBERNETES_VERSION=${KUBERNETES_VERSION:-latest}
 KUBERNETES_CNI_VERSION=${KUBERNETES_CNI_VERSION:-latest}
-DOCKER_VERSION=${DOCKER_VERSION:-latest}
+CONTAINERD_VERSION=${CONTAINERD_VERSION:-latest}
 
 # master 파일 다운
 echo [Donwload master.yaml]
@@ -36,19 +36,41 @@ echo [Install Prerequest packages]
 apt-get update
 apt-get install -y apt-transport-https curl
 
-echo [Docker Install]
+echo "[Containerd Install]"
+if [ "$CONTAINERD_VERSION" = "latest" ]
+then
+  apt-get install -y containerd
+else
+  apt-get install -y containerd=$CONTAINERD_VERSION
+fi
+
+cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
+EOF
+
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward = 1
+EOF
+
+sudo sysctl --system
+
+sudo mkdir -p /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml
+sudo systemctl restart containerd
+
+echo [Kubernetes install]
+
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
 
-wget -qO- get.docker.com | sh
+apt-get update
 
-if [ "$DOCKER_VERSION" != "latest" ]
-then
-  apt-get install -y --allow-downgrades docker-ce=$DOCKER_VERSION
-  service docker restart
-fi
-
-echo [Kubernetes install]
 if [ "$KUBERNETES_VERSION" = "latest" ]
 then
   apt-get install -y kubelet kubeadm kubectl
