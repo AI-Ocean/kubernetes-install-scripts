@@ -29,6 +29,14 @@ KUBERNETES_CNI_VERSION=${KUBERNETES_CNI_VERSION:-latest}
 CONTAINERD_VERSION=${CONTAINERD_VERSION:-latest}
 NODE_HOSTNAME=$(hostname)
 
+echo
+echo ==============================
+echo KUBE VERSION: $KUBERNETES_VERSION
+echo KUBE CNI VERSION: $KUBERNETES_CNI_VERSION
+echo CONTAINERD VERSION: $CONTAINERD_VERSION
+echo ==============================
+echo
+
 # worker 파일 다운
 echo "[Donwload worker.yaml]"
 curl -O https://raw.githubusercontent.com/AI-Ocean/kubernetes-install-scripts/main/worker.yaml
