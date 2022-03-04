@@ -48,7 +48,7 @@ sed -i 's/NODE_HOSTNAME/'"$NODE_HOSTNAME"'/g' worker.yaml
 
 echo "[Install Prerequest packages]"
 apt-get update
-apt-get install -y apt-transport-https curl
+apt-get install -y apt-transport-https curl nfs-common
 
 echo "[Containerd Install]"
 if [ "$CONTAINERD_VERSION" = "latest" ]
