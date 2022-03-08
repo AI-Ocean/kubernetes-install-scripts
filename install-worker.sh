@@ -79,9 +79,9 @@ sudo mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml
 # add private repo
 sed '/\[plugins."io.containerd.grpc.v1.cri".registry.configs\]/a \\t[plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.harbor.svc:80"]\n\t  [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.harbor.svc:80".tls]\n\t    insecure_skip_verify = true' /etc/containerd/config.toml > temp.toml
-mv temp.toml /etc/containerd/config.teml
-sed '/\[plugins."io.containerd.grpc.v1.cri".registry.mirrors\]/a \\t[plugins."io.containerd.grpc.v1.cri".registry.mirrors."harbor.harbor.svc:80"]\n\t  endpoint = ["http://harbor.harbor.svc:80"]' /etc/containerd/config.toml
-mv temp.toml /etc/containerd/config.teml
+mv temp.toml /etc/containerd/config.toml
+sed '/\[plugins."io.containerd.grpc.v1.cri".registry.mirrors\]/a \\t[plugins."io.containerd.grpc.v1.cri".registry.mirrors."harbor.harbor.svc:80"]\n\t  endpoint = ["http://harbor.harbor.svc:80"]' /etc/containerd/config.toml > temp.toml
+mv temp.toml /etc/containerd/config.toml
 sudo systemctl restart containerd
 
 echo "[Kubernetes install]"
